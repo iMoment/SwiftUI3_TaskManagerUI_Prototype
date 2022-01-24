@@ -8,16 +8,45 @@
 import SwiftUI
 
 struct HomeView: View {
+    @StateObject var taskVM: TaskViewModel = TaskViewModel()
+    
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
             // MARK: Lazy Stack with Pinned Header
             LazyVStack(spacing: 15, pinnedViews: [.sectionHeaders]) {
+                
                 Section {
                     // MARK: Current Week View
                     ScrollView(.horizontal, showsIndicators: false) {
+                        
                         HStack(spacing: 10) {
                             
+                            ForEach(taskVM.currentWeek, id: \.self) { day in
+                                
+                                VStack(spacing: 10) {
+                                    Text(taskVM.getDate(date: day, format: "dd"))
+                                        .font(.system(size: 15))
+                                        .fontWeight(.semibold)
+                                    
+                                    Text(taskVM.getDate(date: day, format: "EEE"))
+                                        .font(.system(size: 14))
+                                    
+                                    Circle()
+                                        .fill(Color.white)
+                                        .frame(width: 8, height: 8)
+                                }
+                                .foregroundColor(Color.white)
+                                // MARK: Capsule Shape
+                                .frame(width: 45, height: 90)
+                                .background(
+                                    ZStack {
+                                        Capsule()
+                                            .fill(Color.black)
+                                    }
+                                )
+                            }
                         }
+                        .padding(.horizontal)
                     }
                 } header: {
                     HeaderView()

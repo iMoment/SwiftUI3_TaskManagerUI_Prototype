@@ -39,4 +39,12 @@ class TaskViewModel: ObservableObject {
             }
         }
     }
+    
+    // MARK: Extracting Formatted Date String
+    func getDate(date: Date, format: String) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = format
+        
+        return formatter.string(from: date)
+    }
 }
