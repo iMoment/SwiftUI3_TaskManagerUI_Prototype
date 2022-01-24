@@ -9,6 +9,7 @@ import SwiftUI
 
 struct HomeView: View {
     @StateObject var taskVM: TaskViewModel = TaskViewModel()
+    @Namespace var animation
     
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -20,6 +21,7 @@ struct HomeView: View {
                     ScrollView(.horizontal, showsIndicators: false) {
                         
                         HStack(spacing: 10) {
+//                            Spacer()
                             
                             ForEach(taskVM.currentWeek, id: \.self) { day in
                                 
@@ -34,24 +36,48 @@ struct HomeView: View {
                                     Circle()
                                         .fill(Color.white)
                                         .frame(width: 8, height: 8)
+                                        .opacity(taskVM.isToday(date: day) ? 1 : 0)
                                 }
-                                .foregroundColor(Color.white)
+                                .foregroundStyle(taskVM.isToday(date: day) ? .primary : .secondary)
+                                .foregroundColor(taskVM.isToday(date: day) ? Color.white : Color.black)
                                 // MARK: Capsule Shape
                                 .frame(width: 45, height: 90)
                                 .background(
                                     ZStack {
-                                        Capsule()
-                                            .fill(Color.black)
+                                        // MARK: Matched Geometry Effect
+                                        if taskVM.isToday(date: day) {
+                                            Capsule()
+                                                .fill(Color.black)
+                                                .matchedGeometryEffect(id: "CURRENTDAY", in: animation)
+                                        }
                                     }
                                 )
+                                .contentShape(Capsule())
+                                .onTapGesture {
+                                    withAnimation {
+                                        taskVM.currentDay = day
+                                    }
+                                }
                             }
+                            
+//                            Spacer()
                         }
                         .padding(.horizontal)
                     }
+                    
+                    TasksView()
+                    
                 } header: {
                     HeaderView()
                 }
             }
+        }
+    }
+    
+    // MARK: Tasks View
+    func TasksView() -> some View {
+        LazyVStack {
+            
         }
     }
     
