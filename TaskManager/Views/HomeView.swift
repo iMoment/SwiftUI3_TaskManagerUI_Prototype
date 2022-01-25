@@ -72,6 +72,7 @@ struct HomeView: View {
                 }
             }
         }
+        .ignoresSafeArea(.container, edges: .top)
     }
     
     // MARK: Tasks View
@@ -129,8 +130,33 @@ struct HomeView: View {
                         
                         Text(task.taskDescription)
                             .font(.callout)
+                            .foregroundStyle(.secondary)
                     }
+                    .hLeading()
+                    
+                    Text(task.taskDate.formatted(date: .omitted, time: .shortened))
                 }
+                
+                // MARK: Team Members
+                HStack(spacing: 0) {
+                    HStack(spacing: -10) {
+                        ForEach(["profile2", "profile3", "profile4"], id: \.self) { member in
+                            Image(member)
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 45, height: 45)
+                                .clipShape(Circle())
+                                .background(
+                                    Circle()
+                                        .stroke(Color.black, lineWidth: 5)
+                                )
+                        }
+                    }
+                    .hLeading()
+                    
+                    // MARK: Check Button
+                }
+                .padding(.top)
             }
             .foregroundColor(Color.white)
             .padding()
@@ -166,6 +192,7 @@ struct HomeView: View {
             }
         }
         .padding()
+        .padding(.top, getSafeArea().top)
         .background(Color.white)
     }
 }
