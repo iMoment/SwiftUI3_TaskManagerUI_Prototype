@@ -77,7 +77,7 @@ struct HomeView: View {
     
     // MARK: Tasks View
     func TasksView() -> some View {
-        LazyVStack(spacing: 18) {
+        LazyVStack(spacing: 20) {
             if let tasks = taskVM.filteredTasks {
                 if tasks.isEmpty {
                     Text("No tasks found!")
@@ -109,13 +109,14 @@ struct HomeView: View {
         HStack(alignment: .top, spacing: 30) {
             VStack(spacing: 10) {
                 Circle()
-                    .fill(Color.black)
+                    .fill(taskVM.isCurrentHour(date: task.taskDate) ? Color.black : Color.clear)
                     .frame(width: 15, height: 15)
                     .background(
                         Circle()
                             .stroke(Color.black, lineWidth: 1)
                             .padding(-3)
                     )
+                    .scaleEffect(!taskVM.isCurrentHour(date: task.taskDate) ? 0.8 : 1)
                 
                 Rectangle()
                     .fill(Color.black)
@@ -137,33 +138,45 @@ struct HomeView: View {
                     Text(task.taskDate.formatted(date: .omitted, time: .shortened))
                 }
                 
-                // MARK: Team Members
-                HStack(spacing: 0) {
-                    HStack(spacing: -10) {
-                        ForEach(["profile2", "profile3", "profile4"], id: \.self) { member in
-                            Image(member)
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: 45, height: 45)
-                                .clipShape(Circle())
-                                .background(
-                                    Circle()
-                                        .stroke(Color.black, lineWidth: 5)
-                                )
+                if taskVM.isCurrentHour(date: task.taskDate) {
+                    // MARK: Team Members
+                    HStack(spacing: 0) {
+                        HStack(spacing: -10) {
+                            ForEach(["profile2", "profile3", "profile4"], id: \.self) { member in
+                                Image(member)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(width: 45, height: 45)
+                                    .clipShape(Circle())
+                                    .background(
+                                        Circle()
+                                            .stroke(Color.black, lineWidth: 5)
+                                    )
+                            }
+                        }
+                        .hLeading()
+                        
+                        // MARK: Check Button
+                        Button {
+                            
+                        } label: {
+                            Image(systemName: "checkmark")
+                                .foregroundStyle(Color.black)
+                                .padding(10)
+                                .background(Color.white, in: RoundedRectangle(cornerRadius: 10))
                         }
                     }
-                    .hLeading()
-                    
-                    // MARK: Check Button
+                    .padding(.top)
                 }
-                .padding(.top)
             }
-            .foregroundColor(Color.white)
-            .padding()
+            .foregroundColor(taskVM.isCurrentHour(date: task.taskDate) ? Color.white : Color.black)
+            .padding(taskVM.isCurrentHour(date: task.taskDate) ? 15 : 0)
+            .padding(taskVM.isCurrentHour(date: task.taskDate) ? 0 : 10)
             .hLeading()
             .background(
                 Color("selectBlack")
                     .cornerRadius(25)
+                    .opacity(taskVM.isCurrentHour(date: task.taskDate) ? 1 : 0)
             )
         }
         .hLeading()

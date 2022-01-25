@@ -16,8 +16,8 @@ class TaskViewModel: ObservableObject {
         Task(taskTitle: "Team Party", taskDescription: "Attend the party with team members.", taskDate: .init(timeInterval: (86400 * 5), since: Date())),
         Task(taskTitle: "Client Meeting", taskDescription: "Explain project to client.", taskDate: .init(timeInterval: (86400 * 6), since: Date())),
         Task(taskTitle: "Next Project", taskDescription: "Discuss next project with team.", taskDate: .init(timeInterval: (86400 * 7), since: Date())),
-        Task(taskTitle: "App Proposal", taskDescription: "Meet client for next App Proposal.", taskDate: .init(timeInterval: (86400 * 1), since: Date())),
-        Task(taskTitle: "Production Build", taskDescription: "Testing of prod build", taskDate: .init(timeInterval: (86400 * 2), since: Date()))
+        Task(taskTitle: "App Proposal", taskDescription: "Meet client for next App Proposal.", taskDate: .init(timeInterval: (86400 * 1) + 7200, since: Date())),
+        Task(taskTitle: "Production Build", taskDescription: "Testing of prod build", taskDate: .init(timeInterval: (86400 * 2) + 7200, since: Date()))
     ]
     
     // MARK: Fetch current week dates
@@ -38,6 +38,9 @@ class TaskViewModel: ObservableObject {
             let filtered = self.storedTasks.filter {
                 return calendar.isDate($0.taskDate, inSameDayAs: self.currentDay)
             }
+                .sorted { task1, task2 in
+                    return task2.taskDate < task1.taskDate
+                }
             
             DispatchQueue.main.async {
                 withAnimation {
@@ -74,5 +77,14 @@ class TaskViewModel: ObservableObject {
         let calendar = Calendar.current
         
         return calendar.isDate(currentDay, inSameDayAs: date)
+    }
+    
+    // MARK: Check if current hour is a given task's hour
+    func isCurrentHour(date: Date) -> Bool {
+        let calendar = Calendar.current
+        let hour = calendar.component(.hour, from: date)
+        let currentHour = calendar.component(.hour, from: Date())
+        
+        return hour == currentHour
     }
 }
