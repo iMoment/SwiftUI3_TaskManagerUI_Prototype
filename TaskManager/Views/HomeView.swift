@@ -76,9 +76,71 @@ struct HomeView: View {
     
     // MARK: Tasks View
     func TasksView() -> some View {
-        LazyVStack {
-            
+        LazyVStack(spacing: 18) {
+            if let tasks = taskVM.filteredTasks {
+                if tasks.isEmpty {
+                    Text("No tasks found!")
+                        .font(.system(size: 16))
+                        .fontWeight(.light)
+                        .offset(y: 100)
+                } else {
+                    ForEach(tasks) { task in
+                        TaskCardView(task: task)
+                    }
+                }
+            } else {
+                // MARK: Progress View
+                ProgressView()
+                    .offset(y: 100)
+            }
         }
+        .padding()
+        .padding(.top)
+        
+        // MARK: Updating Tasks
+        .onChange(of: taskVM.currentDay) { newValue in
+            taskVM.filterTodayTasks()
+        }
+    }
+    
+    // MARK: Task Card View
+    func TaskCardView(task: Task) -> some View {
+        HStack(alignment: .top, spacing: 30) {
+            VStack(spacing: 10) {
+                Circle()
+                    .fill(Color.black)
+                    .frame(width: 15, height: 15)
+                    .background(
+                        Circle()
+                            .stroke(Color.black, lineWidth: 1)
+                            .padding(-3)
+                    )
+                
+                Rectangle()
+                    .fill(Color.black)
+                    .frame(width: 3)
+            }
+            
+            VStack {
+                HStack(alignment: .top, spacing: 10) {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text(task.taskTitle)
+                            .font(.title2.bold())
+                        
+                        Text(task.taskDescription)
+                            .font(.callout)
+                    }
+                }
+            }
+            .foregroundColor(Color.white)
+            .padding()
+            .hLeading()
+            .background(
+                Color("selectBlack")
+                    .cornerRadius(25)
+            )
+        }
+        .hLeading()
     }
     
     // MARK: Header View

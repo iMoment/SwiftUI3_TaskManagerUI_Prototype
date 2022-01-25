@@ -9,14 +9,15 @@ import SwiftUI
 
 class TaskViewModel: ObservableObject {
     @Published var storedTasks: [Task] = [
-        Task(taskTitle: "Meeting", taskDescription: "Discuss team task for the day.", taskDate: .init(timeIntervalSince1970: 1641645497)),
-        Task(taskTitle: "Icon Set", taskDescription: "Edit icons for team task for next week.", taskDate: .init(timeIntervalSince1970: 1641649097)),
-        Task(taskTitle: "Prototype", taskDescription: "Make and send prototype.", taskDate: .init(timeIntervalSince1970: 1641652697)),
-        Task(taskTitle: "Check Assets", taskDescription: "Start checking the assets.", taskDate: .init(timeIntervalSince1970: 1641656297)),
-        Task(taskTitle: "Team Party", taskDescription: "Attend the party with team members.", taskDate: .init(timeIntervalSince1970: 1641661897)),
-        Task(taskTitle: "Client Meeting", taskDescription: "Explain project to client.", taskDate: .init(timeIntervalSince1970: 1641641897)),
-        Task(taskTitle: "Next Project", taskDescription: "Discuss next project with team.", taskDate: .init(timeIntervalSince1970: 1641677897)),
-        Task(taskTitle: "App Proposal", taskDescription: "Meet client for next App Proposal.", taskDate: .init(timeIntervalSince1970: 1641681497)),
+        Task(taskTitle: "Meeting", taskDescription: "Discuss team task for the day.", taskDate: .init(timeInterval: (86400 * 1), since: Date())),
+        Task(taskTitle: "Icon Set", taskDescription: "Edit icons for team task for next week.", taskDate: .init(timeInterval: (86400 * 2), since: Date())),
+        Task(taskTitle: "Prototype", taskDescription: "Make and send prototype.", taskDate: .init(timeInterval: (86400 * 3), since: Date())),
+        Task(taskTitle: "Check Assets", taskDescription: "Start checking the assets.", taskDate: .init(timeInterval: (86400 * 4), since: Date())),
+        Task(taskTitle: "Team Party", taskDescription: "Attend the party with team members.", taskDate: .init(timeInterval: (86400 * 5), since: Date())),
+        Task(taskTitle: "Client Meeting", taskDescription: "Explain project to client.", taskDate: .init(timeInterval: (86400 * 6), since: Date())),
+        Task(taskTitle: "Next Project", taskDescription: "Discuss next project with team.", taskDate: .init(timeInterval: (86400 * 7), since: Date())),
+        Task(taskTitle: "App Proposal", taskDescription: "Meet client for next App Proposal.", taskDate: .init(timeInterval: (86400 * 1), since: Date())),
+        Task(taskTitle: "Production Build", taskDescription: "Testing of prod build", taskDate: .init(timeInterval: (86400 * 2), since: Date()))
     ]
     
     // MARK: Fetch current week dates
@@ -25,6 +26,25 @@ class TaskViewModel: ObservableObject {
     
     init() {
         fetchCurrentWeek()
+        filterTodayTasks()
+    }
+    
+    // MARK: Filtering Today's Tasks
+    @Published var filteredTasks: [Task]?
+    
+    func filterTodayTasks() {
+        DispatchQueue.global(qos: .userInteractive).async {
+            let calendar = Calendar.current
+            let filtered = self.storedTasks.filter {
+                return calendar.isDate($0.taskDate, inSameDayAs: self.currentDay)
+            }
+            
+            DispatchQueue.main.async {
+                withAnimation {
+                    self.filteredTasks = filtered
+                }
+            }
+        }
     }
     
     func fetchCurrentWeek() {
